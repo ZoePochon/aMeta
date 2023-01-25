@@ -116,7 +116,7 @@ rule Samtools_Faidx:
     output:
         fai="{prefix}.{fasta}.fai",
     input:
-        fna=ancient("{prefix}.{fasta}"),
+        fna="{prefix}.{fasta}",
     wildcard_constraints:
         fasta="(fna|fasta|fa)",
     message:
