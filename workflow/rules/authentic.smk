@@ -71,8 +71,8 @@ checkpoint Malt_Extract:
 
     """
     input:
-        rma6="results/MALT/{sample}.trimmed.rma6",
-        node_list="results/AUTHENTICATION/{sample}/{taxid}/node_list.txt",
+        rma6=ancient("results/MALT/{sample}.trimmed.rma6"),
+        node_list=ancient("results/AUTHENTICATION/{sample}/{taxid}/node_list.txt"),
     output:
         maltextractlog="results/AUTHENTICATION/{sample}/{taxid}/MaltExtract_output/log.txt",
         nodeentries="results/AUTHENTICATION/{sample}/{taxid}/MaltExtract_output/default/readDist/{sample}.trimmed.rma6_additionalNodeEntries.txt",
@@ -116,26 +116,26 @@ rule Samtools_Faidx:
     output:
         fai="{prefix}.{fasta}.fai",
     input:
-        fna="{prefix}.{fasta}",
+        fna=ancient("{prefix}.{fasta}"),
     wildcard_constraints:
         fasta="(fna|fasta|fa)",
     message:
         "Samtools_Faidx: INDEXING MALT FASTA DATABASE FOR BREADTH_OF_COVERAGE SEQUENCE RETRIEVAL"
     log:
-        "logs/BREADTH_OF_COVERAGE/{prefix}.{fasta}.fai.log",
+        "{prefix}.{fasta}.fai_Samtools_Faidx.log",
     conda:
         "../envs/samtools.yaml"
     envmodules:
         *config["envmodules"]["samtools"],
     shell:
-        "samtools faidx {input.fna}"
+        "samtools faidx {input.fna} 2> {log}"
 
 
 rule Breadth_Of_Coverage:
     input:
-        sam="results/MALT/{sample}.trimmed.sam.gz",
-        malt_fasta=config["malt_nt_fasta"],
-        malt_fasta_fai=f"{config['malt_nt_fasta']}.fai",
+        sam=ancient("results/MALT/{sample}.trimmed.sam.gz"),
+        malt_fasta=ancient(config["malt_nt_fasta"]),
+        malt_fasta_fai=ancient(f"{config['malt_nt_fasta']}.fai"),
     output:
         name_list="results/AUTHENTICATION/{sample}/{taxid}/name_list.txt",
         sorted_bam="results/AUTHENTICATION/{sample}/{taxid}/sorted.bam",
@@ -234,7 +234,7 @@ rule Deamination:
     envmodules:
         *config["envmodules"]["malt"],
     shell:
-        "(samtools view {input.bam} || true) | pmdtools --platypus > {output.tmp}; "
+        "(samtools view {input.bam} || true) | pmdtools --number 2000000 --platypus > {output.tmp}; "
         "cd results/AUTHENTICATION/{wildcards.sample}/{wildcards.taxid}; "
         "R CMD BATCH $(which plotPMD); "
 
