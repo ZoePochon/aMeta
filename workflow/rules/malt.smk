@@ -6,7 +6,7 @@ rule Build_Malt_DB:
         project_fasta="results/MALT_DB/library.project.fna",
         db=directory("results/MALT_DB/maltDB.dat"),
     input:
-        unique_taxids="results/KRAKENUNIQ_ABUNDANCE_MATRIX/unique_species_taxid_list.txt",
+        unique_taxids=ancient("results/KRAKENUNIQ_ABUNDANCE_MATRIX/unique_species_taxid_list.txt"),
     params:
         seqid2taxid=config["malt_seqid2taxid_db"],
         nt_fasta=config["malt_nt_fasta"],
@@ -31,8 +31,8 @@ rule Malt:
         rma6="results/MALT/{sample}.trimmed.rma6",
         sam="results/MALT/{sample}.trimmed.sam.gz",
     input:
-        fastq="results/CUTADAPT_ADAPTER_TRIMMING/{sample}.trimmed.fastq.gz",
-        db="results/MALT_DB/maltDB.dat",
+        fastq=ancient("results/CUTADAPT_ADAPTER_TRIMMING/{sample}.trimmed.fastq.gz"),
+        db=ancient("results/MALT_DB/maltDB.dat"),
     params:
         gunzipped_sam="results/MALT/{sample}.trimmed.sam",
     threads: 20
@@ -55,7 +55,7 @@ rule Malt_QuantifyAbundance:
         out_dir=directory("results/MALT_QUANTIFY_ABUNDANCE/{sample}"),
         counts="results/MALT_QUANTIFY_ABUNDANCE/{sample}/sam_counts.txt",
     input:
-        sam="results/MALT/{sample}.trimmed.sam.gz",
+        sam=ancient("results/MALT/{sample}.trimmed.sam.gz"),
     params:
         unique_taxids="results/KRAKENUNIQ_ABUNDANCE_MATRIX/unique_species_taxid_list.txt",
         exe=WORKFLOW_DIR / "scripts/malt_quantify_abundance.py",
