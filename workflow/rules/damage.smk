@@ -2,9 +2,9 @@ rule MapDamage:
     output:
         dir=directory("results/MAPDAMAGE/{sample}"),
     input:
-        pathogen_tax_id="results/KRAKENUNIQ/{sample}/taxID.pathogens",
-        bam="results/BOWTIE2/{sample}/AlignedToPathogenome.bam",
-        bai="results/BOWTIE2/{sample}/AlignedToPathogenome.bam.bai",
+        pathogen_tax_id=ancient("results/KRAKENUNIQ/{sample}/taxID.pathogens"),
+        bam=ancient("results/BOWTIE2/{sample}/AlignedToPathogenome.bam"),
+        bai=ancient("results/BOWTIE2/{sample}/AlignedToPathogenome.bam.bai"),
     params:
         pathogenome_path=os.path.dirname(config["pathogenomesFound"]),
         PATHO_DB=config["bowtie2_patho_db"],
