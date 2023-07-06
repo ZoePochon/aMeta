@@ -39,7 +39,7 @@ rule Cutadapt_Adapter_Trimming:
         "Cutadapt_Adapter_Trimming: TRIMMING ADAPTERS FOR SAMPLE {input.fastq} WITH CUTADAPT"
     threads: 1
     shell:
-        "cutadapt {params.adapters} --minimum-length 30 -o {output.fastq} {input.fastq} &> {log}"
+        "cutadapt {params.adapters} --minimum-length 30 --maximum-length 149 -o {output.fastq} {input.fastq} &> {log}"
 
 
 rule FastQC_AfterTrimming:
