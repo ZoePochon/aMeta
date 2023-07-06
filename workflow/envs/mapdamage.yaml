@@ -8,3 +8,4 @@ dependencies:
   - htslib<1.15.1
   - parallel
   - samtools
+  - pysam
