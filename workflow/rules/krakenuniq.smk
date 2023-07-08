@@ -60,6 +60,7 @@ rule KrakenUniq2Krona:
     input:
         report="results/KRAKENUNIQ/{sample}/krakenuniq.output.filtered",
         seqs="results/KRAKENUNIQ/{sample}/sequences.krakenuniq",
+    threads: 10
     log:
         "logs/KRAKENUNIQ2KRONA/{sample}.log",
     conda:
