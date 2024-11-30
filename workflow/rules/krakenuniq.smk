@@ -108,10 +108,15 @@ rule KrakenUniq_AbundanceMatrix:
         "KrakenUniq_AbundanceMatrix: COMPUTING KRAKENUNIQ MICROBIAL ABUNDANCE MATRIX"
     shell:
         """
-        # Dynamically find the Conda environment containing pheatmap.
-        # This ensures the correct R environment is used and avoids conflicts with HPC's system R.
-        env=$(grep pheatmap .snakemake/conda/*yaml | awk '{{print $1}}' | sed -e "s/.yaml://g" | head -1);
-        # Run Rscript using the resolved environment
-        $env/bin/Rscript {params.exe} results/KRAKENUNIQ {output.out_dir} {params.n_unique_kmers} {params.n_tax_reads} &> {log};
-        $env/bin/Rscript {params.exe_plot} {output.out_dir} {output.out_dir} &> {log}
+        # Check if Snakemake is using environment modules or Conda
+        if [[ -z "$envmodules" ]]; then
+            # Conda: Dynamically find the Conda environment containing pheatmap
+            env=$(grep pheatmap .snakemake/conda/*yaml | awk '{{print $1}}' | sed -e "s/.yaml://g" | head -1);
+            $env/bin/Rscript {params.exe} results/KRAKENUNIQ {output.out_dir} {params.n_unique_kmers} {params.n_tax_reads} &> {log};
+            $env/bin/Rscript {params.exe_plot} {output.out_dir} {output.out_dir} &> {log}
+        else
+            # Environment Modules: Assume modules are loaded
+            Rscript {params.exe} results/KRAKENUNIQ {output.out_dir} {params.n_unique_kmers} {params.n_tax_reads} &> {log};
+            Rscript {params.exe_plot} {output.out_dir} {output.out_dir} &> {log}
+        fi
         """
