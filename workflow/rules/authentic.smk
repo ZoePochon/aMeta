@@ -230,9 +230,23 @@ rule Authentication_Plots:
     envmodules:
         *config["envmodules"]["malt"],
     shell:
-        "Rscript {params.exe} {wildcards.taxid} {wildcards.sample}.trimmed.rma6 {input.dir}/;"
-        "cp {output.pdf_plot} {output.pdf};"
-        "cp {output.png_plot} {output.png};"
+        """
+        # Dynamically check whether Snakemake is using Conda or environment modules
+        if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
+            # Conda is active: Dynamically find the Conda environment containing the necessary R packages
+            echo "Using Conda environment for R..."
+            env=$(grep hops .snakemake/conda/*yaml | awk '{{print $1}}' | sed -e "s/.yaml://g" | head -1);
+            $env/bin/Rscript {params.exe} {wildcards.taxid} {wildcards.sample}.trimmed.rma6 {input.dir}/;
+            cp {output.pdf_plot} {output.pdf};
+            cp {output.png_plot} {output.png};
+        else
+            # Environment Modules: Assume modules are loaded
+            echo "Using environment modules for R..."
+            Rscript {params.exe} {wildcards.taxid} {wildcards.sample}.trimmed.rma6 {input.dir}/;
+            cp {output.pdf_plot} {output.pdf};
+            cp {output.png_plot} {output.png};
+        fi
+        """        
 
 
 rule Deamination:
