@@ -86,3 +86,11 @@ if [ $? -ne 0 ]; then
     echo ERROR: Report test failed!
     exit
 fi
+
+# Add test for missing taxid
+echo Running test for missing taxid...
+echo 'echo -e "632\n42862" >> results/KRAKENUNIQ/foo/taxID.species'
+echo -e "632\n42862" >> results/KRAKENUNIQ/foo/taxID.species
+echo snakemake --conda-frontend $CONDA_FRONTEND --use-conda --show-failed-logs --conda-cleanup-pkgs cache -s ../workflow/Snakefile $@
+snakemake --conda-frontend $CONDA_FRONTEND --use-conda --show-failed-logs --conda-cleanup-pkgs cache -s ../workflow/Snakefile $@
+rm results/KRAKENUNIQ/foo/taxID.species
